@@ -7,7 +7,10 @@ function startClocks() {
     return;
   }
 
-  setInterval(function() {
+  rotateArrows();
+  setInterval(rotateArrows, 1000);
+
+  function rotateArrows() {
     // JS does not guarantee execution time,
     // so it is better to create new system date
     // each time
@@ -30,7 +33,7 @@ function startClocks() {
       multiplier: 16.2,
       topArrowOffset: 20
     });
-  }, 10);
+  }
 }
 
 startClocks();
