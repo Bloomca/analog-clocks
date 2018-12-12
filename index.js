@@ -7,8 +7,6 @@ function startClocks() {
     return;
   }
 
-  const SECONDS_OFFSET = 16;
-
   setInterval(function() {
     // JS does not guarantee execution time,
     // so it is better to create new system date
@@ -16,35 +14,52 @@ function startClocks() {
     const currentTime = new Date();
 
     const minutes = currentTime.getMinutes();
-    const seconds = currentTime.getSeconds();
+    const seconds =
+      currentTime.getSeconds() + currentTime.getMilliseconds() / 1000;
 
-    const secondsAngle = seconds * 6;
-    const mirroredAngle =
-      secondsAngle > 180 ? 360 - secondsAngle : secondsAngle;
+    rotateArrow({
+      value: minutes,
+      arrowElement: minutesArrow,
+      multiplier: 12,
+      topArrowOffset: 30
+    });
 
-    secondsArrow.style.transform = `rotate(${
-      secondsAngle > 180 ? `-${360 - secondsAngle}` : secondsAngle
-    }deg)`;
-
-    const topOffset = (mirroredAngle / 180) * SECONDS_OFFSET;
-
-    secondsArrow.style.top = `calc(20% + 20px + ${topOffset}%)`;
-
-    if (secondsAngle >= 0 && secondsAngle <= 90) {
-      secondsArrow.style.left = `calc(50% - 2px + ${((secondsAngle / 90) *
-        SECONDS_OFFSET) /
-        2}%)`;
-    } else if (secondsAngle > 90 && secondsAngle <= 180) {
-      const newAngle = (((180 - secondsAngle) / 90) * SECONDS_OFFSET) / 2;
-      secondsArrow.style.left = `calc(50% - 2px + ${newAngle}%)`;
-    } else if (secondsAngle > 180 && secondsAngle <= 270) {
-      const newAngle = (((secondsAngle % 90) / 90) * SECONDS_OFFSET) / 2;
-      secondsArrow.style.left = `calc(50% - 2px - ${newAngle}%)`;
-    } else {
-      const newAngle = (((360 - secondsAngle) / 90) * SECONDS_OFFSET) / 2;
-      secondsArrow.style.left = `calc(50% - 2px - ${newAngle}%)`;
-    }
-  }, 1000);
+    rotateArrow({
+      value: seconds,
+      arrowElement: secondsArrow,
+      multiplier: 16.2,
+      topArrowOffset: 20
+    });
+  }, 10);
 }
 
 startClocks();
+
+function rotateArrow({ value, arrowElement, multiplier, topArrowOffset }) {
+  const angle = value * 6;
+  const mirroredAngle = angle > 180 ? 360 - angle : angle;
+
+  arrowElement.style.transform = `rotate(${
+    angle > 180 ? `-${360 - angle}` : angle
+  }deg)`;
+
+  const topOffset = (mirroredAngle / 180) * multiplier;
+
+  arrowElement.style.top = `calc(${topOffset}% + 20px + ${topArrowOffset}%)`;
+
+  if (angle >= 0 && angle <= 90) {
+    arrowElement.style.left = `calc(50% - 2px + ${((angle / 90) * multiplier) /
+      2}%)`;
+  } else if (angle > 90 && angle <= 180) {
+    const newAngle = (((180 - angle) / 90) * multiplier) / 2;
+    arrowElement.style.left = `calc(50% - 2px + ${newAngle}%)`;
+  } else if (angle > 180 && angle <= 270) {
+    const newAngle = (((angle % 90) / 90) * multiplier) / 2;
+    arrowElement.style.left = `calc(50% - 2px - ${newAngle}%)`;
+  } else {
+    const newAngle = (((360 - angle) / 90) * multiplier) / 2;
+    arrowElement.style.left = `calc(50% - 2px - ${newAngle}%)`;
+  }
+
+  arrowElement.style.opacity = "1";
+}
